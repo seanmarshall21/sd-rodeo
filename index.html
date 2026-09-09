@@ -130,7 +130,6 @@
     border-radius: 12px 12px 0 0;
     box-shadow: 0 -6px 30px rgba(51, 40, 29, .25);
     color: var(--brown);
-    transition: transform .45s var(--ease);
     animation: rise-in .8s var(--ease) 1.2s backwards;   /* backwards: hands control back to the class transform when done */
   }
   .drawer.is-closed { transform: translateY(calc(100% - var(--handle, 40px))); }
@@ -150,7 +149,7 @@
   .drawer__body b { font-weight: 600; }
   .drawer__badge { width: clamp(56px, 8vw, 84px); height: auto; flex: none; }
   @media (max-width: 480px) { .drawer__body { gap: .6rem; padding: 0 .9rem .7rem; } .drawer__body p { font-size: .8rem; } }
-  @media (prefers-reduced-motion: reduce) { .drawer { animation: none; transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .drawer { animation: none; } }
 
   /* ---- Email capture (Netlify Forms) ---------------------------------- */
   .capture {
@@ -345,19 +344,34 @@
   if (window.ResizeObserver) new ResizeObserver(fit).observe(flyer);
   requestAnimationFrame(function () { document.body.classList.add('ready'); });   // transitions only after first layout
 
-  // Details drawer: tucks down to its handle; remembers the choice on this device
+  // Details drawer: tucks down to its handle; remembers the choice on this device.
+  // The slide is driven by the Web Animations API from wherever the drawer currently is, so it
+  // always eases — even if someone taps mid-entrance — and never jumps.
   (function () {
     var btn = drawer.querySelector('.drawer__handle');
-    function set(closed) {
+    var EASE = 'cubic-bezier(.2,.7,.2,1)';
+    function currentY() {
+      var m = getComputedStyle(drawer).transform;
+      if (!m || m === 'none') return 0;
+      var v = m.match(/matrix\((.+)\)/); return v ? parseFloat(v[1].split(',')[5]) : 0;
+    }
+    function set(closed, instant) {
+      var from = currentY();
+      drawer.style.animation = 'none';                          // the entrance no longer owns transform
+      drawer.getAnimations().forEach(function (a) { a.cancel(); });
       drawer.classList.toggle('is-closed', closed);
       btn.setAttribute('aria-expanded', String(!closed));
+      var to = closed ? drawer.offsetHeight - btn.offsetHeight : 0;
+      if (!instant && Math.abs(to - from) > 1) {
+        var anim = drawer.animate([{ transform: 'translateY(' + from + 'px)' }, { transform: 'translateY(' + to + 'px)' }],
+                                  { duration: 450, easing: EASE, fill: 'forwards' });
+        anim.onfinish = function () { anim.cancel(); };          // hand back to the class's resting transform
+      }
       fit();
       try { localStorage.setItem('sdr-drawer', closed ? 'closed' : 'open'); } catch (e) {}
     }
-    function settle() { drawer.style.animation = 'none'; }     // hand transform fully to the transition
-    drawer.addEventListener('animationend', settle, { once: true });
-    btn.addEventListener('click', function () { settle(); set(!drawer.classList.contains('is-closed')); });
-    try { if (localStorage.getItem('sdr-drawer') === 'open') set(false); } catch (e) {}
+    btn.addEventListener('click', function () { set(!drawer.classList.contains('is-closed')); });
+    try { if (localStorage.getItem('sdr-drawer') === 'open') set(false, true); } catch (e) {}
   })();
 </script>
 </body>
