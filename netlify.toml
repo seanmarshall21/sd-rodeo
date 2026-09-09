@@ -11,3 +11,9 @@
   for = "/*"
   [headers.values]
     Content-Security-Policy = "frame-ancestors 'self' https://rodeosd.com https://www.rodeosd.com"
+
+# The canonical home of the splash is rodeosd.com; keep this copy out of search results
+[[headers]]
+  for = "/"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
