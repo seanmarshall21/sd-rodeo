@@ -130,8 +130,9 @@
     border-radius: 12px 12px 0 0;
     box-shadow: 0 -6px 30px rgba(51, 40, 29, .25);
     color: var(--brown);
-    animation: rise-in .8s var(--ease) 1.2s backwards;   /* backwards: hands control back to the class transform when done */
+    opacity: 0;                                          /* the intro script brings it up behind the bottom bar */
   }
+  .drawer.is-live { opacity: 1; }
   .drawer.is-closed { transform: translateY(calc(100% - var(--handle, 40px))); }
   .drawer__handle {
     --handle: 40px;
@@ -149,7 +150,6 @@
   .drawer__body b { font-weight: 600; }
   .drawer__badge { width: clamp(56px, 8vw, 84px); height: auto; flex: none; }
   @media (max-width: 480px) { .drawer__body { gap: .6rem; padding: 0 .9rem .7rem; } .drawer__body p { font-size: .8rem; } }
-  @media (prefers-reduced-motion: reduce) { .drawer { animation: none; } }
 
   /* ---- Email capture (Netlify Forms) ---------------------------------- */
   .capture {
@@ -344,24 +344,26 @@
   if (window.ResizeObserver) new ResizeObserver(fit).observe(flyer);
   requestAnimationFrame(function () { document.body.classList.add('ready'); });   // transitions only after first layout
 
-  // Details drawer: tucks down to its handle; remembers the choice on this device.
-  // The slide is driven by the Web Animations API from wherever the drawer currently is, so it
-  // always eases — even if someone taps mid-entrance — and never jumps.
+  // Details drawer. Intro: as the logo is animating in, the drawer fades up from behind the bottom bar,
+  // holds open for a second, then slides down to its handle. Any later tap slides it from wherever it is.
   (function () {
     var btn = drawer.querySelector('.drawer__handle');
     var EASE = 'cubic-bezier(.2,.7,.2,1)';
+    var timers = [];
+    function closedY() { return drawer.offsetHeight - btn.offsetHeight; }
     function currentY() {
       var m = getComputedStyle(drawer).transform;
       if (!m || m === 'none') return 0;
       var v = m.match(/matrix\((.+)\)/); return v ? parseFloat(v[1].split(',')[5]) : 0;
     }
+    function stopAll() { timers.forEach(clearTimeout); timers = []; drawer.getAnimations().forEach(function (a) { a.cancel(); }); }
     function set(closed, instant) {
       var from = currentY();
-      drawer.style.animation = 'none';                          // the entrance no longer owns transform
-      drawer.getAnimations().forEach(function (a) { a.cancel(); });
+      stopAll();
+      drawer.classList.add('is-live');
       drawer.classList.toggle('is-closed', closed);
       btn.setAttribute('aria-expanded', String(!closed));
-      var to = closed ? drawer.offsetHeight - btn.offsetHeight : 0;
+      var to = closed ? closedY() : 0;
       if (!instant && Math.abs(to - from) > 1) {
         var anim = drawer.animate([{ transform: 'translateY(' + from + 'px)' }, { transform: 'translateY(' + to + 'px)' }],
                                   { duration: 450, easing: EASE, fill: 'forwards' });
@@ -371,7 +373,24 @@
       try { localStorage.setItem('sdr-drawer', closed ? 'closed' : 'open'); } catch (e) {}
     }
     btn.addEventListener('click', function () { set(!drawer.classList.contains('is-closed')); });
-    try { if (localStorage.getItem('sdr-drawer') === 'open') set(false, true); } catch (e) {}
+
+    var wantsOpen = false;
+    try { wantsOpen = localStorage.getItem('sdr-drawer') === 'open'; } catch (e) {}
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { set(!wantsOpen, true); return; }
+    // the class stays is-closed throughout the intro, so the layout above never reacts to it
+    timers.push(setTimeout(function () {
+      drawer.classList.add('is-live');
+      var up = drawer.animate(
+        [{ transform: 'translateY(100%)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
+        { duration: 700, easing: EASE, fill: 'forwards' });
+      timers.push(setTimeout(function () {
+        if (wantsOpen) { up.cancel(); set(false, true); return; }
+        var down = drawer.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(' + closedY() + 'px)' }],
+                                  { duration: 450, easing: EASE, fill: 'forwards' });
+        down.onfinish = function () { up.cancel(); down.cancel(); };
+      }, 700 + 1000));
+    }, 1000));
   })();
 </script>
 </body>
