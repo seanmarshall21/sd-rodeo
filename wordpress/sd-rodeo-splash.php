@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SD Rodeo Splash
  * Description: [sd_rodeo_splash] drops the San Diego Rodeo 2027 splash (hosted on Netlify) into a page as a full-height frame.
- * Version:     1.1
+ * Version:     1.2
  * Author:      Vivo Creative
  *
  * Install: upload this folder to wp-content/plugins/ and activate, or paste the function + add_shortcode
@@ -29,7 +29,8 @@ function sd_rodeo_splash_shortcode( $atts ) {
 	$css = '';
 	if ( ! $css_done ) {
 		$css_done = true;
-		$css = '<style>body.admin-bar .sd-rodeo-splash{height:calc(' . $height . ' - 32px)!important}'
+		$css = '<style>html,body{overflow:hidden!important;overscroll-behavior:none;height:100%}'   /* the splash is one screen: no scroll, no bounce */
+			. 'body.admin-bar .sd-rodeo-splash{height:calc(' . $height . ' - 32px)!important}'
 			. '@media(max-width:782px){body.admin-bar .sd-rodeo-splash{height:calc(' . $height . ' - 46px)!important}}</style>';
 	}
 
