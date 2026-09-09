@@ -6,7 +6,7 @@ Single static page, no build step. Deploys to Netlify (site `sd-rodeo-2027`) fro
   promo background, plus the email capture. Entrance animation is pure CSS and respects reduced-motion.
 - `assets/img/wide/*.webp` — the desktop art as five layers (sky, cowboy, left, bottom-left and top-right paper pieces — `rt` is not used) from
   `BRANDING/Web/Splash`, positioned on a 1917x1039 stage in `index.html` so they can tear in on load.
-- `assets/img/tall/` — phone layers: Sean's three paper pieces (`tr`, `lft`, `botrt` from `BRANDING/Web/Splash/WebP`) plus
+- `assets/img/tall/` — phone layers: Sean's four paper pieces (`tr`, `tl`, `bl`, `botrt` from `BRANDING/Web/Splash/WebP`) plus
   `sky.webp`, which is an approximation built from the desktop sky (scaled, sat at the bottom, sky extended upward). The phone
   cowboy is the desktop `wide/cowboy.webp` scaled down. Replace `sky.webp` / the cowboy with real `mobile-bkgnd` / `mobile-cowboy`
   exports when they exist — same slots.

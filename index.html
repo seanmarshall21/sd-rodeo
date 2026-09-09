@@ -113,7 +113,8 @@
   .pc-tr     { right: -16px; top: -16px;    width: 1044px; --anim: from-right; animation-delay: .3s; }
   /* phone pieces: pinned to their corners, 4% past the edge; the corner tear is scaled down to tuck in */
   .pc-sky    { left: -2%;    top: -2%;      width: 104%;  --anim: bg-in;      animation-duration: 1.4s; }
-  .pc-mlft   { left: -16px;  top: 60px;     width: 608px; --anim: from-left;  animation-delay: .2s; }
+  .pc-mtl    { left: -16px;  top: -16px;    width: 460px; --anim: from-left;  animation-delay: .2s; }
+  .pc-mbl    { left: -16px;  bottom: -16px; width: 257px; --anim: from-left;  animation-delay: .45s; }
   .pc-mtr    { right: -16px; top: -16px;    width: 520px; --anim: from-right; animation-delay: .3s; }
   .pc-mbotrt { right: -16px; bottom: -16px; width: 281px; --anim: from-right; animation-delay: .5s; }
   .frame-tall .pc-cowboy { left: -610px; bottom: -60px; width: 2450px; }  /* width/left are set by fit() */
@@ -199,7 +200,8 @@
   <!-- tall phones: 1080x1920 stage — phone paper pieces from BRANDING/Web/Splash over the desktop sky + cowboy -->
   <section class="frame frame-tall" style="width:1080px;height:1920px" data-w="1080" data-h="1920" data-keep="150,120,930,870" data-glow="150,140,930,870" data-cow-bottom="-60" data-cow-pct="0.42" data-type-pct="0.46" aria-label="San Diego Rodeo, January 15–17, 2027, all ages, Petco Park">
     <img class="pc pc-sky"    src="assets/img/tall/sky.webp"    width="1080" height="1920" alt="" fetchpriority="high">
-    <img class="pc pc-mlft"   src="assets/img/tall/lft.webp"    width="608"  height="1274" alt="">
+    <img class="pc pc-mtl"    src="assets/img/tall/tl.webp"     width="442"  height="1033" alt="">
+    <img class="pc pc-mbl"    src="assets/img/tall/bl.webp"     width="247"  height="722"  alt="">
     <img class="pc pc-mtr"    src="assets/img/tall/tr.webp"     width="724"  height="699"  alt="">
     <img class="pc pc-mbotrt" src="assets/img/tall/botrt.webp"  width="281"  height="869"  alt="">
     <img class="pc pc-cowboy" src="assets/img/wide/cowboy.webp" width="3008" height="1190" alt="">
