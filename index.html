@@ -157,7 +157,7 @@
     flex: none;
     background: var(--brown);
     border-top: 3px solid var(--sand);
-    padding: clamp(.9rem, 2.2vw, 1.5rem) clamp(1rem, 5vw, 3rem) max(clamp(.9rem, 2.2vw, 1.5rem), env(safe-area-inset-bottom));
+    padding: clamp(.8rem, 2vw, 1.2rem) clamp(1rem, 5vw, 3rem) max(clamp(.8rem, 2vw, 1.2rem), env(safe-area-inset-bottom));
     animation: rise-in .8s var(--ease) 1.1s both;
   }
   .capture__inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 1rem 1.5rem; flex-wrap: wrap; justify-content: center; }
@@ -172,7 +172,6 @@
   }
   .cta:hover { background: #e6b24a; transform: translateY(-1px); }
   .cta:focus-visible { outline: 3px solid var(--sand); outline-offset: 3px; }
-  .capture .fine { flex-basis: 100%; text-align: center; font-size: .75rem; opacity: .7; margin: 0; }
   @media (max-width: 480px) { .capture h2 { white-space: normal; text-align: center; } }
 
   @keyframes bg-in      { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: none; } }
@@ -198,7 +197,7 @@
        data-keep is the box that must stay on screen: the type block. -->
 
   <!-- tall phones: 1080x1920 stage — phone paper pieces from BRANDING/Web/Splash over the desktop sky + cowboy -->
-  <section class="frame frame-tall" style="width:1080px;height:1920px" data-w="1080" data-h="1920" data-keep="150,120,930,870" data-glow="150,140,930,870" data-cow-bottom="-60" data-cow-pct="0.42" data-type-pct="0.46" aria-label="San Diego Rodeo, January 15–17, 2027, all ages, Petco Park">
+  <section class="frame frame-tall" style="width:1080px;height:1920px" data-w="1080" data-h="1920" data-keep="150,120,930,870" data-glow="150,140,930,870" data-cow-bottom="-60" data-cow-gap="10" data-petco-bottom="867" data-type-pct="0.46" aria-label="San Diego Rodeo, January 15–17, 2027, all ages, Petco Park">
     <img class="pc pc-sky"    src="assets/img/tall/sky.webp"    width="1080" height="1920" alt="" fetchpriority="high">
     <img class="pc pc-mtl"    src="assets/img/tall/tl.webp"     width="442"  height="1033" alt="">
     <img class="pc pc-mbl"    src="assets/img/tall/bl.webp"     width="247"  height="722"  alt="">
@@ -261,7 +260,6 @@
   <div class="capture__inner">
     <h2 id="capture-h" class="spur">Be first in line for tickets</h2>
     <a class="cta spur" href="https://laylo.com/sandiegorodeo/SDR2027" target="_blank" rel="noopener">Notify me</a>
-    <p class="fine">One text or email when tickets go on sale. No spam.</p>
   </div>
 </section>
 
@@ -313,31 +311,33 @@
       f.style.transform = 'translate(' + ox + 'px,' + oy + 'px) scale(' + s + ')';
       // desktop cowboy: pinned to the bottom, but his hat never goes above the screen —
       // if it would, he slides down until there's a little headroom (2.5% of the flyer, ≥ 12px)
+      // phone: the type block (logo → Petco Park) is data-type-pct of the flyer height, anchored at its top
+      var tsp = 1;
+      if (f.dataset.typePct) {
+        var gg = f.dataset.glow.split(',').map(Number);
+        tsp = Math.min((+f.dataset.typePct) * fh / ((gg[3] - gg[1]) * s), (fw - 2 * PAD) / ((gg[2] - gg[0]) * s));
+        var tt = f.querySelector('.type.glow');
+        tt.style.transformOrigin = ((gg[0] + gg[2]) / 2) + 'px ' + gg[1] + 'px';
+        tt.style.transform = 'scale(' + tsp + ')';
+      }
       var cow = f.querySelector('.pc-cowboy');
       if (cow) {
-        var HATROW = 37 / 1190;                                  // first opaque row of the cowboy piece, as a fraction of its height
+        var HATROW = 37 / 1190, HATFRONT = 1664 / 3008;         // hat top row / hat front edge, as fractions of the piece
         var cowH = +f.dataset.cowH, cowBottom = +f.dataset.cowBottom;
-        if (f.dataset.cowPct) {
-          // phone: size the cowboy so hat → bottom of the flyer is data-cow-pct of the flyer height
-          var want = (+f.dataset.cowPct) * fh / s;              // frame px from hat to the flyer's bottom edge
-          var flyerBottomInFrame = (fh - oy) / s;
-          cowH = (want + (H - flyerBottomInFrame) - cowBottom) / (1 - HATROW);
+        if (f.dataset.cowGap) {
+          // phone: size the cowboy so his hat sits data-cow-gap px (scaled with the screen) under Petco Park,
+          // and keep him left — the front of his hat stays short of the page centre
+          var gap = Math.max(8, fw * (+f.dataset.cowGap) / 375) / s;
+          var petcoBottom = gg[1] + ((+f.dataset.petcoBottom) - gg[1]) * tsp;
+          cowH = (H - cowBottom - petcoBottom - gap) / (1 - HATROW);
           var cowW = cowH * 3008 / 1190;
           cow.style.width = cowW + 'px';
-          cow.style.left = (450 - 0.43 * cowW) + 'px';           // keep his chest centred around x=450
+          cow.style.left = (W / 2 - 20 - HATFRONT * cowW) + 'px';
         }
         var natTop = H - cowBottom - cowH, HAT = HATROW * cowH;
         var hatY = (natTop + HAT) * s + oy, pad = Math.max(12, fh * 0.025);
         if (hatY < pad) { cow.style.bottom = 'auto'; cow.style.top = (natTop + (pad - hatY) / s) + 'px'; }
         else { cow.style.top = ''; cow.style.bottom = ''; }
-      }
-      // phone: the type block (logo → Petco Park) is data-type-pct of the flyer height, anchored at its top
-      if (f.dataset.typePct) {
-        var gg = f.dataset.glow.split(',').map(Number);
-        var tsp = Math.min((+f.dataset.typePct) * fh / ((gg[3] - gg[1]) * s), (fw - 2 * PAD) / ((gg[2] - gg[0]) * s));
-        var tt = f.querySelector('.type.glow');
-        tt.style.transformOrigin = ((gg[0] + gg[2]) / 2) + 'px ' + gg[1] + 'px';
-        tt.style.transform = 'scale(' + tsp + ')';
       }
     });
   }
