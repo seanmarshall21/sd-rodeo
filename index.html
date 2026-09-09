@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>San Diego Rodeo — Jan. 15–17, 2027 · Petco Park</title>
+<meta name="description" content="San Diego Rodeo returns to Petco Park for its 4th consecutive year, January 15–17, 2027. All ages. Outriders &amp; Finest Collective present.">
+<meta property="og:title" content="San Diego Rodeo — Jan. 15–17, 2027">
+<meta property="og:description" content="Back at Petco Park for the 4th consecutive year. All ages.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#33281D">
+<link rel="icon" href="assets/logo/badge.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/SDRodeoSpurVF.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* SD Rodeo 2027 palette — Brand Elements/Fonts/samples/sdr27--color-values.png */
+  :root {
+    --light: #FDFBF6;
+    --sand:  #F4EDD0;
+    --gold:  #D9A53C;
+    --brown: #33281D;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+  }
+  @font-face {
+    font-family: "SD Rodeo Spur";
+    src: url("assets/fonts/SDRodeoSpurVF.woff2") format("woff2-variations"),
+         url("assets/fonts/SDRodeoSpurVF.woff2") format("woff2");
+    font-weight: 300 900;
+    font-stretch: 80% 100%;
+    font-display: swap;
+  }
+  @font-face { font-family: "Acumin Pro"; src: url("assets/fonts/AcuminPro-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Acumin Pro"; src: url("assets/fonts/AcuminPro-Semibold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Acumin Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--sand);
+    background: var(--brown);
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+  .spur {
+    font-family: "SD Rodeo Spur", Impact, "Arial Narrow Bold", sans-serif;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  /* ---- Top strip ------------------------------------------------------ */
+  .strip {
+    flex: none;
+    background: var(--brown); color: var(--gold);
+    text-align: center;
+    padding: .5rem 1rem;
+    font-size: clamp(.8rem, 1.5vw, 1.15rem);
+    font-variation-settings: "wght" 600, "wdth" 85;
+    letter-spacing: .12em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    animation: drop-in .7s var(--ease) both;
+  }
+
+  /* ---- Flyer ------------------------------------------------------------
+     Each screen shape gets its own art frame, laid out in the PSD's own pixel
+     coordinates. JS scales the frame to cover the flyer (a touch more than cover,
+     so the art always hangs past the screen edge) and slides it so the type block
+     stays fully in view. The type sits exactly where the designer put it, so it
+     never lands on the cowboy, and the frame's own edge is never exposed. */
+  .flyer { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: var(--brown); }
+  .frame {
+    position: absolute; left: 0; top: 0;
+    transform-origin: 0 0;
+    display: none;
+  }
+  .frame > * { position: absolute; }
+  .frame img { display: block; }
+  .frame .bg { left: 0; top: 0; width: 100%; height: 100%; animation: bg-in 1.4s var(--ease) both; }
+
+  /* which frame shows, by screen shape */
+  @media (max-aspect-ratio: 7/10) { .frame-tall { display: block; } }
+  @media (min-aspect-ratio: 7/10) and (max-aspect-ratio: 13/10) { .frame-45 { display: block; } }
+  @media (min-aspect-ratio: 13/10) { .frame-wide { display: block; } }
+
+  /* the type block: logo, date, all ages, Petco Park — glowing like the PSD's WITH GLOW group */
+  .glow { filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 26px #fff) drop-shadow(0 0 48px #fff) drop-shadow(0 0 90px rgba(255,255,255,.9)); }
+  .type { width: 100%; height: 100%; left: 0; top: 0; pointer-events: none; }
+  .ready .type.glow, .ready .frame { transition: transform .45s var(--ease); }
+  .type > * { position: absolute; }
+  .lockup { width: 100%; height: auto; }
+  .date {
+    margin: 0; text-align: center; white-space: nowrap;
+    font-variation-settings: "wght" 700, "wdth" 86;
+    color: var(--brown);
+    -webkit-text-stroke: .012em var(--gold); paint-order: stroke fill;
+    letter-spacing: .01em; line-height: 1;
+  }
+  .ages { margin: 0; text-align: center; white-space: nowrap; font-variation-settings: "wght" 700, "wdth" 85; letter-spacing: .2em; color: var(--brown); line-height: 1; }
+  .petco { width: 100%; height: auto; }
+
+  /* entrance choreography */
+  .in { animation: rise-in .8s var(--ease) both; }
+  .lockup.in { animation-name: pop-in; animation-duration: .9s; }
+  .d1 { animation-delay: .25s } .d2 { animation-delay: .45s } .d3 { animation-delay: .6s } .d4 { animation-delay: .72s } .d5 { animation-delay: .9s }
+
+  /* the wide frame is six layers that tear in */
+  .pc { height: auto; animation: var(--anim, none) 1.1s var(--ease) both; }
+  /* every piece is pinned to the edge(s) it touches and runs 4% past them, so no edge ever shows */
+  .pc-bkgnd  { left: -2%;    top: -2%;      width: 104%;   --anim: bg-in;      animation-duration: 1.4s; }
+  .pc-cowboy { left: -936px; bottom: -80px; width: 3008px; --anim: from-below; animation-delay: .6s; }   /* last in, on top */
+  .pc-bl     { left: -16px;  bottom: -16px; width: 257px;  --anim: from-left;  animation-delay: .55s; }
+  .pc-lft    { left: -16px;  top: -16px;    width: 460px;  --anim: from-left;  animation-delay: .2s; }
+  .pc-tr     { right: -16px; top: -16px;    width: 1044px; --anim: from-right; animation-delay: .3s; }
+  /* phone pieces: pinned to their corners, 4% past the edge; the corner tear is scaled down to tuck in */
+  .pc-sky    { left: -2%;    top: -2%;      width: 104%;  --anim: bg-in;      animation-duration: 1.4s; }
+  .pc-mlft   { left: -16px;  top: 60px;     width: 608px; --anim: from-left;  animation-delay: .2s; }
+  .pc-mtr    { right: -16px; top: -16px;    width: 520px; --anim: from-right; animation-delay: .3s; }
+  .pc-mbotrt { right: -16px; bottom: -16px; width: 281px; --anim: from-right; animation-delay: .5s; }
+  .frame-tall .pc-cowboy { left: -610px; bottom: -60px; width: 2450px; }  /* width/left are set by fit() */
+  .frame-tall .d1 { animation-delay: .9s } .frame-tall .d2 { animation-delay: 1.1s } .frame-tall .d3 { animation-delay: 1.25s } .frame-tall .d4 { animation-delay: 1.35s }
+  .frame-wide .d1 { animation-delay: .9s } .frame-wide .d2 { animation-delay: 1.1s } .frame-wide .d3 { animation-delay: 1.25s } .frame-wide .d4 { animation-delay: 1.35s }
+
+  /* ---- Details drawer ------------------------------------------------ */
+  .drawer {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    width: max-content; max-width: min(720px, 100% - 1.5rem); margin: 0 auto;
+    background: rgba(255, 255, 255, .86);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -6px 30px rgba(51, 40, 29, .25);
+    color: var(--brown);
+    transition: transform .45s var(--ease);
+    animation: rise-in .8s var(--ease) 1.2s backwards;   /* backwards: hands control back to the class transform when done */
+  }
+  .drawer.is-closed { transform: translateY(calc(100% - var(--handle, 40px))); }
+  .drawer__handle {
+    --handle: 40px;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    width: 100%; height: var(--handle); margin: 0; padding: 0 1rem;
+    border: 0; background: transparent; color: var(--brown); cursor: pointer;
+    font-size: .95rem; letter-spacing: .12em; font-variation-settings: "wght" 700, "wdth" 88;
+  }
+  .drawer__handle:focus-visible { outline: 3px solid var(--gold); outline-offset: -4px; border-radius: 12px 12px 0 0; }
+  .chev { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .3s; }
+  .drawer.is-closed .chev { transform: rotate(180deg); }
+  .drawer__body { display: flex; align-items: center; justify-content: center; gap: 1rem 1.25rem; padding: 0 1.4rem 1rem; }
+  .drawer__badge { order: -1; }
+  .drawer__body p { margin: 0; font-family: "Acumin Pro", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 500; font-size: clamp(.82rem, 1.5vw, 1rem); line-height: 1.5; }
+  .drawer__body b { font-weight: 600; }
+  .drawer__badge { width: clamp(56px, 8vw, 84px); height: auto; flex: none; }
+  @media (max-width: 480px) { .drawer__body { gap: .6rem; padding: 0 .9rem .7rem; } .drawer__body p { font-size: .8rem; } }
+  @media (prefers-reduced-motion: reduce) { .drawer { animation: none; transition: none; } }
+
+  /* ---- Email capture (Netlify Forms) ---------------------------------- */
+  .capture {
+    flex: none;
+    background: var(--brown);
+    border-top: 3px solid var(--sand);
+    padding: clamp(.9rem, 2.2vw, 1.5rem) clamp(1rem, 5vw, 3rem) max(clamp(.9rem, 2.2vw, 1.5rem), env(safe-area-inset-bottom));
+    animation: rise-in .8s var(--ease) 1.1s both;
+  }
+  .capture__inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 1rem 1.5rem; flex-wrap: wrap; justify-content: center; }
+  .capture h2 { margin: 0; font-size: clamp(1.25rem, 2.6vw, 1.7rem); color: var(--gold); font-variation-settings: "wght" 700, "wdth" 90; white-space: nowrap; }
+  .cta {
+    display: inline-block; text-decoration: none;
+    font-variation-settings: "wght" 700, "wdth" 90;
+    letter-spacing: .06em; font-size: 1.2rem;
+    padding: .75rem 1.6rem; border-radius: 6px;
+    background: var(--gold); color: var(--brown);
+    transition: transform .12s ease, background .12s ease;
+  }
+  .cta:hover { background: #e6b24a; transform: translateY(-1px); }
+  .cta:focus-visible { outline: 3px solid var(--sand); outline-offset: 3px; }
+  .capture .fine { flex-basis: 100%; text-align: center; font-size: .75rem; opacity: .7; margin: 0; }
+  @media (max-width: 480px) { .capture h2 { white-space: normal; text-align: center; } }
+
+  @keyframes bg-in      { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: none; } }
+  @keyframes drop-in    { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
+  @keyframes rise-in    { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes pop-in     { from { opacity: 0; transform: translateY(14px) scale(.94); } 60% { transform: translateY(0) scale(1.015); } to { opacity: 1; transform: none; } }
+  @keyframes from-left  { from { opacity: 0; transform: translateX(-60px) rotate(-1.5deg); } to { opacity: 1; transform: none; } }
+  @keyframes from-right { from { opacity: 0; transform: translateX(70px) rotate(1deg); } to { opacity: 1; transform: none; } }
+  @keyframes from-above { from { opacity: 0; transform: translate(40px, -60px) rotate(2deg); } to { opacity: 1; transform: none; } }
+  @keyframes from-below { from { opacity: 0; transform: translateY(70px) scale(1.02); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .bg, .strip, .in, .capture, .pc { animation: none; }
+    .cta { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="strip spur">San Diego Rodeo returns for 4th consecutive year</div>
+
+<main class="flyer" id="flyer">
+  <!-- Positions below are the PSD's own layer boxes (left, top, width, height), in frame pixels.
+       data-keep is the box that must stay on screen: the type block. -->
+
+  <!-- tall phones: 1080x1920 stage — phone paper pieces from BRANDING/Web/Splash over the desktop sky + cowboy -->
+  <section class="frame frame-tall" style="width:1080px;height:1920px" data-w="1080" data-h="1920" data-keep="150,120,930,870" data-glow="150,140,930,870" data-cow-bottom="-60" data-cow-pct="0.42" data-type-pct="0.46" aria-label="San Diego Rodeo, January 15–17, 2027, all ages, Petco Park">
+    <img class="pc pc-sky"    src="assets/img/tall/sky.webp"    width="1080" height="1920" alt="" fetchpriority="high">
+    <img class="pc pc-mlft"   src="assets/img/tall/lft.webp"    width="608"  height="1274" alt="">
+    <img class="pc pc-mtr"    src="assets/img/tall/tr.webp"     width="724"  height="699"  alt="">
+    <img class="pc pc-mbotrt" src="assets/img/tall/botrt.webp"  width="281"  height="869"  alt="">
+    <img class="pc pc-cowboy" src="assets/img/wide/cowboy.webp" width="3008" height="1190" alt="">
+    <div class="type glow">
+      <h1 style="margin:0;left:150px;top:140px;width:780px"><img class="lockup in d1" src="assets/logo/lockup.svg" width="724" height="426" alt="Outriders &amp; Finest Collective present San Diego Rodeo"></h1>
+      <p class="date spur in d2" style="left:90px;top:625px;width:900px;font-size:118px">Jan. 15–17, 2027</p>
+      <p class="ages spur in d3" style="left:90px;top:752px;width:900px;font-size:22px">– All ages –</p>
+      <img class="petco in d4" src="assets/logo/petco-park.svg" width="441" height="87" alt="Petco Park" style="left:325px;top:782px;width:430px">
+    </div>
+  </section>
+
+  <!-- tablets and squarer windows: 1080x1350 promo -->
+  <section class="frame frame-45" style="width:1080px;height:1350px" data-w="1080" data-h="1350" data-crop-top="85" data-keep="360,260,1019,940" data-shrink="1" data-glow="360,290,1019,922" data-cap="0.58" aria-label="San Diego Rodeo, January 15–17, 2027, all ages, Petco Park">
+    <picture class="bg">
+      <source type="image/webp" srcset="assets/img/bg-45.webp">
+      <img src="assets/img/bg-45.jpg" alt="" fetchpriority="high" style="width:100%;height:100%">
+    </picture>
+    <div class="type glow">
+      <h1 style="margin:0;left:360px;top:290px;width:659px"><img class="lockup in d1" src="assets/logo/lockup.svg" width="724" height="426" alt="Outriders &amp; Finest Collective present San Diego Rodeo"></h1>
+      <p class="date spur in d2" style="left:239px;top:718px;width:901px;font-size:99px">Jan. 15–17, 2027</p>
+      <p class="ages spur in d3" style="left:239px;top:831px;width:901px;font-size:20px">– All ages –</p>
+      <img class="petco in d4" src="assets/logo/petco-park.svg" width="441" height="87" alt="Petco Park" style="left:506px;top:854px;width:364px">
+    </div>
+  </section>
+
+  <!-- landscape: 1917x1039 stage, five layers from BRANDING/Web/Splash (sky, cowboy, left, bottom-left, top-right) -->
+  <section class="frame frame-wide" style="width:1917px;height:1039px" data-w="1917" data-h="1039" data-keep="860,100,1790,960" data-cow-bottom="-80" data-cow-h="1190" data-cow-hat="37" data-shrink="1" data-glow="895,132,1757,944" data-cap="0.72" aria-label="San Diego Rodeo, January 15–17, 2027, all ages, Petco Park">
+    <img class="pc pc-bkgnd"  src="assets/img/wide/bkgnd.webp"  width="1917" height="1039" alt="" fetchpriority="high">
+    <img class="pc pc-bl"     src="assets/img/wide/bl.webp"     width="247"  height="486"  alt="">
+    <img class="pc pc-lft"    src="assets/img/wide/lft.webp"    width="442"  height="1033" alt="">
+    <img class="pc pc-tr"     src="assets/img/wide/tr.webp"     width="1004" height="1016" alt="">
+    <img class="pc pc-cowboy" src="assets/img/wide/cowboy.webp" width="3008" height="1190" alt="">
+    <div class="type glow">
+      <h1 style="margin:0;left:895px;top:132px;width:862px"><img class="lockup in d1" src="assets/logo/lockup.svg" width="724" height="426" alt="Outriders &amp; Finest Collective present San Diego Rodeo"></h1>
+      <p class="date spur in d2" style="left:826px;top:692px;width:1000px;font-size:130px">Jan. 15–17, 2027</p>
+      <p class="ages spur in d3" style="left:826px;top:830px;width:1000px;font-size:24px">– All ages –</p>
+      <img class="petco in d4" src="assets/logo/petco-park.svg" width="441" height="87" alt="Petco Park" style="left:1108px;top:859px;width:456px">
+    </div>
+  </section>
+  <!-- event details: pinned to the bottom of the flyer on every layout, tucks down to its handle -->
+  <aside class="drawer is-closed" id="drawer">
+    <button class="drawer__handle spur" type="button" aria-expanded="false" aria-controls="drawer-body">
+      <span>Event details</span>
+      <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="drawer__body" id="drawer-body">
+      <p><b>Fri &amp; Sat:</b> Beerfest · <b>Fri night:</b> Drone show<br>
+        <b>Sat night:</b> Line dancing and a post-rodeo party<br>
+        <b>Sun:</b> KidsFest pre-event with family-friendly activities<br>
+        <b>Sun:</b> Big post-event concert</p>
+      <img class="drawer__badge" src="assets/logo/badge.svg" width="427" height="427" alt="San Diego Rodeo">
+    </div>
+  </aside>
+</main>
+
+<section class="capture" id="capture" aria-labelledby="capture-h">
+  <div class="capture__inner">
+    <h2 id="capture-h" class="spur">Be first in line for tickets</h2>
+    <a class="cta spur" href="https://laylo.com/sandiegorodeo/SDR2027" target="_blank" rel="noopener">Notify me</a>
+    <p class="fine">One text or email when tickets go on sale. No spam.</p>
+  </div>
+</section>
+
+<script>
+  // Scale each art frame to cover the flyer (plus 3% so the art hangs past every edge), then
+  // slide it so the type block (data-keep) stays fully on screen — above the details drawer.
+  // Cropping only ever eats background edges, and the frame's own edge can never show.
+  var drawer = document.getElementById('drawer');
+  var flyer = document.getElementById('flyer');
+  function fit() {
+    var frames = [].slice.call(document.querySelectorAll('.frame'));
+    var OVERSCAN = 1.03, PAD = 12;
+    var fw = flyer.clientWidth, fh = flyer.clientHeight;
+    var open = !drawer.classList.contains('is-closed');
+    var dh = open ? drawer.offsetHeight : drawer.querySelector('.drawer__handle').offsetHeight;
+    var fhv = fh - dh;                                          // the part of the flyer the drawer doesn't cover
+    frames.forEach(function (f) {
+      var W = +f.dataset.w, H = +f.dataset.h, k = f.dataset.keep.split(',').map(Number);
+      var crop = +f.dataset.cropTop || 0;                     // frame rows that must stay above the screen
+      var s = Math.max(fw / W, fh / (H - crop)) * OVERSCAN;
+      // shrinkable frames: keep the glow block (logo → Petco Park) under data-cap of the visible
+      // height. It shrinks toward its top centre, so it never moves — it only gives up room below.
+      var ts = 1, g = null;
+      if (f.dataset.shrink) {
+        g = f.dataset.glow.split(',').map(Number);
+        var cap = +f.dataset.cap || 1;
+        // cap against the whole flyer, so opening/closing the drawer never changes this part
+        ts = Math.min(1, cap * fh / ((g[3] - g[1]) * s), (fw - 2 * PAD) / ((g[2] - g[0]) * s));
+        k = [g[0], g[1], g[2], g[1] + (g[3] - g[1]) * ts];
+      }
+      var ox = (fw - W * s) / 2, oy = (fh - H * s) / 2;        // centred on the whole flyer; the drawer never slides the art
+      // horizontal: keep the type block inside; if it can't fit, centre it
+      if ((k[2] - k[0]) * s > fw - 2 * PAD) ox = (fw - (k[0] + k[2]) * s) / 2;
+      else ox = Math.min(Math.max(ox, PAD - k[0] * s), fw - PAD - k[2] * s);
+      // vertical: same, but if it can't fit, favour the top (logo + date)
+      if ((k[3] - k[1]) * s > fh - 2 * PAD) oy = PAD - k[1] * s;
+      else oy = Math.min(Math.max(oy, PAD - k[1] * s), fh - PAD - k[3] * s);
+      // never expose the frame's own edge (nor the cropped band at the top)
+      ox = Math.max(Math.min(ox, 0), fw - W * s);
+      oy = Math.max(Math.min(oy, -crop * s), fh - H * s);
+      if (g) {
+        // only if the open drawer would actually overlap the block does it shrink further — from its top, in place
+        var avail = fhv - PAD - (g[1] * s + oy);
+        ts = Math.min(ts, Math.max(0.4, avail / ((g[3] - g[1]) * s)));
+        var t = f.querySelector('.type.glow');
+        t.style.transformOrigin = ((g[0] + g[2]) / 2) + 'px ' + g[1] + 'px';
+        t.style.transform = 'scale(' + ts + ')';
+      }
+      f.style.transform = 'translate(' + ox + 'px,' + oy + 'px) scale(' + s + ')';
+      // desktop cowboy: pinned to the bottom, but his hat never goes above the screen —
+      // if it would, he slides down until there's a little headroom (2.5% of the flyer, ≥ 12px)
+      var cow = f.querySelector('.pc-cowboy');
+      if (cow) {
+        var HATROW = 37 / 1190;                                  // first opaque row of the cowboy piece, as a fraction of its height
+        var cowH = +f.dataset.cowH, cowBottom = +f.dataset.cowBottom;
+        if (f.dataset.cowPct) {
+          // phone: size the cowboy so hat → bottom of the flyer is data-cow-pct of the flyer height
+          var want = (+f.dataset.cowPct) * fh / s;              // frame px from hat to the flyer's bottom edge
+          var flyerBottomInFrame = (fh - oy) / s;
+          cowH = (want + (H - flyerBottomInFrame) - cowBottom) / (1 - HATROW);
+          var cowW = cowH * 3008 / 1190;
+          cow.style.width = cowW + 'px';
+          cow.style.left = (450 - 0.43 * cowW) + 'px';           // keep his chest centred around x=450
+        }
+        var natTop = H - cowBottom - cowH, HAT = HATROW * cowH;
+        var hatY = (natTop + HAT) * s + oy, pad = Math.max(12, fh * 0.025);
+        if (hatY < pad) { cow.style.bottom = 'auto'; cow.style.top = (natTop + (pad - hatY) / s) + 'px'; }
+        else { cow.style.top = ''; cow.style.bottom = ''; }
+      }
+      // phone: the type block (logo → Petco Park) is data-type-pct of the flyer height, anchored at its top
+      if (f.dataset.typePct) {
+        var gg = f.dataset.glow.split(',').map(Number);
+        var tsp = Math.min((+f.dataset.typePct) * fh / ((gg[3] - gg[1]) * s), (fw - 2 * PAD) / ((gg[2] - gg[0]) * s));
+        var tt = f.querySelector('.type.glow');
+        tt.style.transformOrigin = ((gg[0] + gg[2]) / 2) + 'px ' + gg[1] + 'px';
+        tt.style.transform = 'scale(' + tsp + ')';
+      }
+    });
+  }
+  fit(); addEventListener('resize', fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(flyer);
+  requestAnimationFrame(function () { document.body.classList.add('ready'); });   // transitions only after first layout
+
+  // Details drawer: tucks down to its handle; remembers the choice on this device
+  (function () {
+    var btn = drawer.querySelector('.drawer__handle');
+    function set(closed) {
+      drawer.classList.toggle('is-closed', closed);
+      btn.setAttribute('aria-expanded', String(!closed));
+      fit();
+      try { localStorage.setItem('sdr-drawer', closed ? 'closed' : 'open'); } catch (e) {}
+    }
+    btn.addEventListener('click', function () { set(!drawer.classList.contains('is-closed')); });
+    try { if (localStorage.getItem('sdr-drawer') === 'open') set(false); } catch (e) {}
+  })();
+</script>
+</body>
+</html>
