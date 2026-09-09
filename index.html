@@ -354,7 +354,9 @@
       fit();
       try { localStorage.setItem('sdr-drawer', closed ? 'closed' : 'open'); } catch (e) {}
     }
-    btn.addEventListener('click', function () { set(!drawer.classList.contains('is-closed')); });
+    function settle() { drawer.style.animation = 'none'; }     // hand transform fully to the transition
+    drawer.addEventListener('animationend', settle, { once: true });
+    btn.addEventListener('click', function () { settle(); set(!drawer.classList.contains('is-closed')); });
     try { if (localStorage.getItem('sdr-drawer') === 'open') set(false); } catch (e) {}
   })();
 </script>

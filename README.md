@@ -29,3 +29,17 @@ https://www.figma.com/file/4NUPihRsj8m47iY2mxwyb8?node-id=971:588
 
 The opt-in is a link to the Laylo drop https://laylo.com/sandiegorodeo/SDR2027 (Laylo refuses to be embedded in an iframe,
 so it opens in a new tab). Sign-ups live in Laylo, not Netlify.
+
+## Dropping it into rodeosd.com (WordPress)
+
+`wordpress/sd-rodeo-splash.php` is a one-file plugin that registers `[sd_rodeo_splash]`. It outputs a
+full-viewport iframe of the Netlify page. Netlify sends `Content-Security-Policy: frame-ancestors` allowing
+rodeosd.com and www.rodeosd.com (see `netlify.toml`), so the frame works there and nowhere else.
+
+1. Upload the `wordpress/` folder to `wp-content/plugins/` and activate **SD Rodeo Splash**
+   (or paste the function + `add_shortcode` line into a Code Snippets snippet).
+2. Make a page with a full-width / blank template (no sidebar, no padding) and put `[sd_rodeo_splash]` in it.
+3. Optional: `[sd_rodeo_splash height="80vh"]` if the site header stays visible above it.
+
+No-plugin fallback: a Custom HTML block with
+`<iframe src="https://sd-rodeo-2027.netlify.app/" style="width:100%;height:100svh;border:0;display:block"></iframe>`.
