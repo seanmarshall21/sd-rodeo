@@ -14,9 +14,7 @@ Single static page, no build step. Deploys to Netlify (site `sd-rodeo-2027`) fro
   type layers removed. Made from the layered PSD/PSB files: hide the type groups, render with psd-tools,
   then colour-match that render to Sean's real export with a 3D LUT (psd-tools can't do the PSD's
   gradient-map / levels grading on its own). Which one loads depends on the screen's aspect ratio.
-- `assets/logo/lockup.svg` — `BRANDING/Brand Elements/Logos/logo-lockup/sdr27--logo-lockup-dk.svg`, per Sean, with one edit:
-  that export had no word spacing in the eyebrow, so the 33 letter shapes are wrapped in `<g transform>`s that open
-  gaps after OUTRIDERS / PRESENT / + / FINEST and re-centre the line. Re-apply if the source SVG is replaced.
+- `assets/logo/lockup.svg` — `2027/_Brand Kit/Brand Elements/Logos/logo-lockup/sdr27--logo-lockup-dk.svg` (Sean's final export, 600x354, used untouched).
   Do NOT use the logo smart objects inside the PSDs — their eyebrow wording is out of date.
 - `assets/logo/badge.svg` — vector pulled out of the PSD's SECONDARY smart object.
 - `assets/logo/petco-park.svg` — from `Rodeo Asset Pack/petco_park_logos.ai` (single-line variant).
