@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>San Diego Rodeo — Jan. 15–17, 2027 · Petco Park</title>
+<title>San Diego Rodeo — Tickets · Jan. 15–17, 2027 · Petco Park</title>
 <meta name="description" content="San Diego Rodeo returns to Petco Park for its 4th consecutive year, January 15–17, 2027. All ages. Outriders &amp; Finest Collective present.">
 <meta property="og:title" content="San Diego Rodeo — Jan. 15–17, 2027">
 <meta property="og:description" content="Back at Petco Park for the 4th consecutive year. All ages.">
@@ -32,17 +32,16 @@
   @font-face { font-family: "Acumin Pro"; src: url("assets/fonts/AcuminPro-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
   @font-face { font-family: "Acumin Pro"; src: url("assets/fonts/AcuminPro-Semibold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
   *, *::before, *::after { box-sizing: border-box; }
-  html { height: 100%; overflow: hidden; overscroll-behavior: none; }   /* one screen, never scrolls or bounces */
-  html, body { margin: 0; height: 100%; }
+  html { scroll-behavior: smooth; overscroll-behavior-y: none; }
+  html, body { margin: 0; }
   body {
     font-family: "Acumin Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: var(--sand);
     background: var(--brown);
     -webkit-font-smoothing: antialiased;
-    display: flex; flex-direction: column;
-    height: 100svh;
-    overflow: hidden; overscroll-behavior: none;
   }
+  /* the splash: exactly one screen, laid out as before; the ticket section scrolls up beneath it */
+  .hero { display: flex; flex-direction: column; height: 100svh; overflow: hidden; }
   .spur {
     font-family: "SD Rodeo Spur", Impact, "Arial Narrow Bold", sans-serif;
     text-transform: uppercase;
@@ -174,6 +173,29 @@
   .cta:focus-visible { outline: 3px solid var(--sand); outline-offset: 3px; }
   @media (max-width: 480px) { .capture h2 { white-space: normal; text-align: center; } }
 
+  /* ---- Tickets ---------------------------------------------------------- */
+  .tickets { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; background: var(--sand, #F4EDD0); color: var(--brown); padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 3rem) clamp(3rem, 7vw, 5rem); text-align: center; }
+  .tickets__h { margin: 0; font-size: clamp(2.4rem, 6vw, 4rem); font-variation-settings: "wght" 800, "wdth" 90; color: var(--brown); }
+  .tickets__sub { margin: .6rem 0 0; font-size: clamp(.85rem, 1.6vw, 1.05rem); letter-spacing: .14em; opacity: .75; font-variation-settings: "wght" 600, "wdth" 85; }
+  .tickets__grid { width: 100%; max-width: 1200px; margin: clamp(2rem, 5vw, 3.5rem) auto 0; display: grid; gap: clamp(1.1rem, 2.2vw, 1.8rem); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 760px) { .tickets__grid { grid-template-columns: 1fr; } }
+  /* last year's boxes: paper card, brown outline, hard offset shadow */
+  .tcard { display: flex; flex-direction: column; align-items: center; gap: .5rem; background: #F1E8D2; color: var(--brown); border: 2px solid var(--brown); border-radius: 3px; box-shadow: 8px 8px 0 var(--brown); padding: clamp(1.2rem, 2.4vw, 1.6rem) clamp(1rem, 2.4vw, 1.8rem) clamp(1.3rem, 2.4vw, 1.7rem); }
+  .tcard--hi { grid-column: 1 / -1; background: var(--brown); color: var(--sand); border-color: var(--brown); box-shadow: 8px 8px 0 var(--gold); }
+  .tcard__eyebrow { margin: 0; font-size: clamp(.85rem, 1.4vw, 1.05rem); letter-spacing: .16em; font-variation-settings: "wght" 700, "wdth" 90; }
+  .tcard__eyebrow span { opacity: .6; margin: 0 .15em; }
+  .tcard__day { margin: 0 0 .6rem; font-size: clamp(2.6rem, 5.6vw, 4.4rem); font-variation-settings: "wght" 900, "wdth" 100; color: var(--gold);
+    -webkit-text-stroke: clamp(1.5px, .2vw, 2.5px) var(--brown); paint-order: stroke fill; text-shadow: .06em .06em 0 var(--brown); }
+  .tcard--hi .tcard__day { text-shadow: .06em .06em 0 #1c1610; -webkit-text-stroke-color: #1c1610; }
+  .tcard__btn { margin-top: auto; align-self: stretch; display: flex; justify-content: center; align-items: center; gap: .45em; text-decoration: none; color: var(--brown); border: 2px solid var(--brown); border-radius: 999px; padding: .7rem 1rem; font-size: clamp(1rem, 1.6vw, 1.2rem); letter-spacing: .08em; font-variation-settings: "wght" 700, "wdth" 90; transition: background .15s ease, color .15s ease, transform .12s ease; }
+  .tcard__chev { width: 1.05em; height: 1.05em; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; margin-top: -.08em; }
+  .tcard__btn:hover { background: var(--brown); color: var(--sand); transform: translateY(-1px); }
+  .tcard--hi .tcard__btn { color: var(--sand); border-color: var(--sand); }
+  .tcard--hi .tcard__btn:hover { background: var(--gold); border-color: var(--gold); color: var(--brown); }
+  .tcard__btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .tickets__sms { margin: clamp(2rem, 4vw, 2.8rem) 0 0; font-weight: 500; font-size: 1rem; }
+  .tickets__sms a { color: var(--brown); font-weight: 600; text-underline-offset: 3px; }
+
   @keyframes bg-in      { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: none; } }
   @keyframes drop-in    { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
   @keyframes rise-in    { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
@@ -184,12 +206,14 @@
   @keyframes from-below { from { opacity: 0; transform: translateY(70px) scale(1.02); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
     .bg, .strip, .in, .capture, .pc { animation: none; }
-    .cta { transition: none; }
+    .cta, .tcard__btn { transition: none; }
+    html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
 
+<div class="hero">
 <div class="strip spur">San Diego Rodeo returns for 4th consecutive year</div>
 
 <main class="flyer" id="flyer">
@@ -258,9 +282,38 @@
 
 <section class="capture" id="capture" aria-labelledby="capture-h">
   <div class="capture__inner">
-    <h2 id="capture-h" class="spur">Be first in line for tickets</h2>
-    <a class="cta spur" href="https://laylo.com/sandiegorodeo" target="_blank" rel="noopener">Notify me</a>
+    <h2 id="capture-h" class="spur">Tickets on sale now</h2>
+    <a class="cta spur" href="#tickets">Get tickets</a>
   </div>
+</section>
+</div><!-- /hero -->
+
+<section class="tickets" id="tickets" aria-labelledby="tickets-h">
+  <h2 id="tickets-h" class="tickets__h spur">Get tickets</h2>
+  <p class="tickets__sub spur">Petco Park · Jan. 15–17, 2027 · All ages</p>
+  <div class="tickets__grid">
+    <article class="tcard">
+      <p class="tcard__eyebrow spur">Day 1 <span>/</span> Jan. 15</p>
+      <h3 class="tcard__day spur">Friday</h3>
+      <a class="tcard__btn spur" href="https://www.ticketmaster.com/event/0A00652BE4B8E87C" target="_blank" rel="noopener">Get tickets <svg class="tcard__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+    </article>
+    <article class="tcard">
+      <p class="tcard__eyebrow spur">Day 2 <span>/</span> Jan. 16</p>
+      <h3 class="tcard__day spur">Saturday</h3>
+      <a class="tcard__btn spur" href="https://www.ticketmaster.com/event/0A006530A8CF76FA" target="_blank" rel="noopener">Get tickets <svg class="tcard__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+    </article>
+    <article class="tcard">
+      <p class="tcard__eyebrow spur">Day 3 <span>/</span> Jan. 17</p>
+      <h3 class="tcard__day spur">Sunday</h3>
+      <a class="tcard__btn spur" href="https://www.ticketmaster.com/event/0A006530B7FF8A6C" target="_blank" rel="noopener">Get tickets <svg class="tcard__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+    </article>
+    <article class="tcard tcard--hi">
+      <p class="tcard__eyebrow spur">All days <span>/</span> Jan. 15–17</p>
+      <h3 class="tcard__day spur">3-Day passes</h3>
+      <a class="tcard__btn spur" href="https://www.ticketmaster.com/event/0A00652FB0808AC2" target="_blank" rel="noopener">Get tickets <svg class="tcard__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+    </article>
+  </div>
+  <p class="tickets__sms"><a href="https://laylo.com/sandiegorodeo" target="_blank" rel="noopener">Get text updates</a></p>
 </section>
 
 <script>

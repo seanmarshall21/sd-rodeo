@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SD Rodeo Splash
  * Description: [sd_rodeo_splash] drops the San Diego Rodeo 2027 splash (hosted on Netlify) into a page as a full-height frame.
- * Version:     1.3
+ * Version:     1.4
  * Author:      Vivo Creative
  *
  * Install: upload this folder to wp-content/plugins/ and activate, or paste the function + add_shortcode
@@ -63,10 +63,12 @@ function sd_rodeo_splash_shortcode( $atts ) {
 				),
 			),
 			'organizer'           => array( '@type' => 'Organization', 'name' => 'Outriders', 'url' => 'https://www.rodeosd.com/' ),
+			// Tickets on sale via Ticketmaster (one offer per ticket type)
 			'offers'              => array(
-				'@type'        => 'Offer',
-				'url'          => 'https://laylo.com/sandiegorodeo/SDR2027',
-				'availability' => 'https://schema.org/PreOrder',
+				array( '@type' => 'Offer', 'name' => '3-Day Pass', 'url' => 'https://www.ticketmaster.com/event/0A00652FB0808AC2', 'availability' => 'https://schema.org/InStock', 'validFrom' => '2026-09-18' ),
+				array( '@type' => 'Offer', 'name' => 'Friday',     'url' => 'https://www.ticketmaster.com/event/0A00652BE4B8E87C', 'availability' => 'https://schema.org/InStock', 'validFrom' => '2026-09-18' ),
+				array( '@type' => 'Offer', 'name' => 'Saturday',   'url' => 'https://www.ticketmaster.com/event/0A006530A8CF76FA', 'availability' => 'https://schema.org/InStock', 'validFrom' => '2026-09-18' ),
+				array( '@type' => 'Offer', 'name' => 'Sunday',     'url' => 'https://www.ticketmaster.com/event/0A006530B7FF8A6C', 'availability' => 'https://schema.org/InStock', 'validFrom' => '2026-09-18' ),
 			),
 		), JSON_UNESCAPED_SLASHES ) . '</script>';
 	}
